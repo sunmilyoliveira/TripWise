@@ -24,7 +24,7 @@ export const participants: Participant[] = [
   { id: "diego", name: "Diego Rocha", initials: "DR" },
 ];
 
-export const participantById = (id: string) => participants.find((p) => p.id === id)!;
+export const participantById = (id: string) => participants.find((p) => p.id === id) ?? participants[0]!;
 
 export const trips: Trip[] = [
   { id: "gramado", name: "Inverno na Serra", destination: "Gramado", country: "Brasil", image: gramado,
@@ -59,8 +59,8 @@ export const categoryTotals = (list = expenses) => {
 export const balances = (list = expenses) => {
   const b: Record<string, number> = Object.fromEntries(participants.map((p) => [p.id, 0]));
   list.forEach((e) => {
-    b[e.paidBy] += e.amount;
-    Object.entries(e.shares).forEach(([id, v]) => (b[id] -= v));
+    b[e.paidBy] = (b[e.paidBy] ?? 0) + e.amount;
+    Object.entries(e.shares).forEach(([id, v]) => (b[id] = (b[id] ?? 0) - v));
   });
   return b;
 };
@@ -72,11 +72,12 @@ export const suggestTransfers = (bal = balances()) => {
   const out: { from: string; to: string; amount: number }[] = [];
   let i = 0, j = 0;
   while (i < debtors.length && j < creditors.length) {
-    const amt = Math.min(debtors[i].v, creditors[j].v);
-    out.push({ from: debtors[i].id, to: creditors[j].id, amount: Math.round(amt * 100) / 100 });
-    debtors[i].v -= amt; creditors[j].v -= amt;
-    if (debtors[i].v < 0.01) i++;
-    if (creditors[j].v < 0.01) j++;
+    const d = debtors[i]!, c = creditors[j]!;
+    const amt = Math.min(d.v, c.v);
+    out.push({ from: d.id, to: c.id, amount: Math.round(amt * 100) / 100 });
+    d.v -= amt; c.v -= amt;
+    if (d.v < 0.01) i++;
+    if (c.v < 0.01) j++;
   }
   return out;
 };
