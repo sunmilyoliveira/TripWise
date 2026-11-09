@@ -8,7 +8,7 @@ describe("divisão de despesas", () => {
   });
   it("transferências sugeridas zeram os saldos", () => {
     const b = balances(expenses);
-    suggestTransfers(b).forEach((t) => { b[t.from] += t.amount; b[t.to] -= t.amount; });
+    suggestTransfers(b).forEach((t) => { b[t.from] = (b[t.from] ?? 0) + t.amount; b[t.to] = (b[t.to] ?? 0) - t.amount; });
     Object.values(b).forEach((v) => expect(Math.abs(v)).toBeLessThan(0.05));
   });
 });
