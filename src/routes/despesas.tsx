@@ -17,7 +17,7 @@ export const Route = createFileRoute("/despesas")({
   component: Expenses,
 });
 
-export const categoryIcon: Record<Category, typeof Car> = { Hospedagem: BedDouble, Transporte: Car, Alimentação: UtensilsCrossed, Passeios: Ticket, Compras: ShoppingBag };
+const categoryIcon: Record<Category, typeof Car> = { Hospedagem: BedDouble, Transporte: Car, Alimentação: UtensilsCrossed, Passeios: Ticket, Compras: ShoppingBag };
 
 function Expenses() {
   const [trip, setTrip] = useState("all");
