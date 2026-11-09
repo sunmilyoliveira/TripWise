@@ -24,7 +24,7 @@ function Dashboard() {
   const toReceive = transfers.filter((t) => t.to === currentUserId).reduce((a, t) => a + t.amount, 0);
   const toPay = transfers.filter((t) => t.from === currentUserId).reduce((a, t) => a + t.amount, 0);
   const pct = Math.round((spent / budget) * 100);
-  const net = balances()[currentUserId];
+  const net = balances()[currentUserId] ?? 0;
 
   return (
     <>
