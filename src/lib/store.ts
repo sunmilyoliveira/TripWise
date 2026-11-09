@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { computeShares, type SplitInput } from "./finance";
+import { computeShares } from "./finance";
 import { fmt } from "./money";
 import type { AppState, Category, Currency, Expense, Invite, Participant, Payment, Role, Settings, Trip } from "./types";
 import { ME } from "./types";
@@ -142,7 +142,7 @@ export function saveExpense(input: ExpenseInput, id?: string): Result<Expense> {
   if (!input.date) return err("Informe a data.");
   if (!trip.participantIds.includes(input.paidBy)) return err("Quem pagou precisa ser participante da viagem.");
   if (input.participantIds.some((p) => !trip.participantIds.includes(p))) return err("Participantes inválidos para esta viagem.");
-  const split = computeShares(input as SplitInput);
+  const split = computeShares({ amount: input.amount, mode: input.splitMode, participantIds: input.participantIds, customValues: input.customValues, percentages: input.percentages });
   if (!split.ok) return err(split.error);
   if (id) {
     const cur = state.expenses.find((e) => e.id === id); if (!cur) return err("Despesa não encontrada.");
