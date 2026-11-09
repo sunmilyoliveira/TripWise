@@ -10,7 +10,7 @@ export function CategoryDonut({ data }: { data: { name: string; value: number }[
     <div className="flex flex-col items-center gap-6 sm:flex-row">
       <div className="relative size-44 shrink-0">
           <PieChart width={176} height={176}>
-            <Pie isAnimationActive={false} data={data} dataKey="value" innerRadius={58} outerRadius={84} paddingAngle={2} stroke="none">
+            <Pie isAnimationActive={false} cx={88} cy={88} startAngle={90} endAngle={-270} data={data} dataKey="value" innerRadius={58} outerRadius={84} paddingAngle={2} stroke="none">
               {data.map((_, i) => <Cell key={i} fill={chartColors[i % 5]} />)}
             </Pie>
             <Tooltip {...tip} />
@@ -22,7 +22,7 @@ export function CategoryDonut({ data }: { data: { name: string; value: number }[
       <ul className="w-full space-y-2.5">
         {data.map((d, i) => (
           <li key={d.name} className="flex items-center justify-between text-sm">
-            <span className="flex items-center gap-2"><span className="size-2.5 rounded-full" style={{ background: chartColors[i % 5] }} />{d.name}</span>
+            <span className="flex items-center gap-2 pr-3"><span className="size-2.5 rounded-full" style={{ background: chartColors[i % 5] }} />{d.name}</span>
             <span className="text-muted-foreground tabular">{Math.round((d.value / total) * 100)}%</span>
           </li>
         ))}

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/divisao")({
 
 function Split() {
   const [mode, setMode] = useState<"igual" | "personalizada">("igual");
-  const trip = trips[1];
+  const trip = trips[1]!;
   const list = expenses.filter((e) => e.tripId === trip.id);
   const bal = balances(list);
   return (
