@@ -1,46 +1,54 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useMatchRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader, DemoBadge } from "@/components/app/ui";
+import { PageHeader, EmptyState, FilterPill } from "@/components/app/ui";
 import { TripCard } from "@/components/app/TripCard";
-import { NewTripDialog } from "@/components/app/NewTripDialog";
-import { trips, type TripStatus } from "@/lib/demo-data";
-import { cn } from "@/lib/utils";
+import { TripDialog } from "@/components/app/TripDialog";
+import { useAppState } from "@/lib/store";
+import { tripPhase, type TripPhase } from "@/lib/finance";
 
 export const Route = createFileRoute("/viagens")({
   head: () => ({ meta: [
     { title: "Minhas viagens — TripWise" },
-    { name: "description", content: "Todas as suas viagens com orçamento, datas, participantes e gastos." },
+    { name: "description", content: "Crie, edite e acompanhe o orçamento das suas viagens futuras, em andamento e concluídas." },
     { property: "og:title", content: "Minhas viagens — TripWise" },
-    { property: "og:description", content: "Todas as suas viagens com orçamento, datas, participantes e gastos." },
+    { property: "og:description", content: "Crie, edite e acompanhe o orçamento das suas viagens futuras, em andamento e concluídas." },
   ] }),
-  component: Trips,
+  component: TripsLayout,
 });
 
-const filters: ("Todas" | TripStatus)[] = ["Todas", "Planejando", "Confirmada", "Concluída"];
+function TripsLayout() {
+  const match = useMatchRoute();
+  if (match({ to: "/viagens/$tripId", fuzzy: true })) return <Outlet />;
+  return <Trips />;
+}
 
+const filters: ("Todas" | TripPhase)[] = ["Todas", "Futura", "Em andamento", "Concluída"];
 function Trips() {
+  const trips = useAppState((s) => s.trips);
   const [f, setF] = useState<(typeof filters)[number]>("Todas");
-  const list = f === "Todas" ? trips : trips.filter((t) => t.status === f);
+  const list = [...(f === "Todas" ? trips : trips.filter((t) => tripPhase(t) === f))].sort((a, b) => a.start.localeCompare(b.start));
   return (
     <>
-      <PageHeader eyebrow="Viagens" title="Minhas viagens" description="Acompanhe orçamento e gastos de cada destino."
-        action={<NewTripDialog><Button size="lg"><Plus />Nova viagem</Button></NewTripDialog>} />
-      <div className="mb-6 flex flex-wrap items-center gap-2">
-        {filters.map((x) => (
-          <button key={x} onClick={() => setF(x)} className={cn("rounded-full border px-4 py-1.5 text-sm font-medium transition-colors", f === x ? "border-navy bg-navy text-navy-foreground" : "bg-card text-muted-foreground hover:text-foreground")}>{x}</button>
-        ))}
-        <span className="ml-auto"><DemoBadge /></span>
-      </div>
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {list.map((t) => <TripCard key={t.id} trip={t} />)}
-        <NewTripDialog>
-          <button className="grid min-h-72 place-items-center rounded-2xl border-2 border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary">
-            <span className="flex flex-col items-center gap-2 text-sm font-medium"><Plus className="size-6" />Planejar nova viagem</span>
-          </button>
-        </NewTripDialog>
-      </div>
+      <PageHeader eyebrow="Viagens" title="Minhas viagens" description="Toque em uma viagem para ver o resumo, planejamento e compartilhamento."
+        action={<TripDialog><Button size="lg"><Plus />Nova viagem</Button></TripDialog>} />
+      {trips.length === 0 ? (
+        <EmptyState icon={Plane} title="Nenhuma viagem cadastrada" text="Defina destino, datas, participantes e orçamento." action={<TripDialog><Button><Plus />Criar viagem</Button></TripDialog>} />
+      ) : (
+        <>
+          <div className="mb-6 flex flex-wrap gap-2">{filters.map((x) => <FilterPill key={x} active={f === x} onClick={() => setF(x)}>{x === "Futura" ? "Futuras" : x === "Concluída" ? "Concluídas" : x}</FilterPill>)}</div>
+          {list.length === 0 && <p className="mb-6 text-sm text-muted-foreground">Nenhuma viagem nesta situação.</p>}
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {list.map((t) => <TripCard key={t.id} trip={t} />)}
+            <TripDialog>
+              <button className="grid min-h-72 place-items-center rounded-2xl border-2 border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary">
+                <span className="flex flex-col items-center gap-2 text-sm font-medium"><Plus className="size-6" />Planejar nova viagem</span>
+              </button>
+            </TripDialog>
+          </div>
+        </>
+      )}
     </>
   );
 }

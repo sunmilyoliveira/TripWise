@@ -1,69 +1,86 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus, Plane, Wallet, Receipt, ArrowDownLeft, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Plus, Plane, Wallet, Receipt, ArrowDownLeft, ArrowUpRight, ArrowRight, PiggyBank } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader, StatCard, Panel, DemoBadge, ProgressBar } from "@/components/app/ui";
+import { PageHeader, StatCard, Panel, ProgressBar, EmptyState, BudgetAlert } from "@/components/app/ui";
 import { TripCard } from "@/components/app/TripCard";
-import { NewTripDialog } from "@/components/app/NewTripDialog";
+import { TripDialog } from "@/components/app/TripDialog";
+import { ExpenseDialog } from "@/components/app/ExpenseDialog";
 import { CategoryDonut } from "@/components/app/charts";
-import { trips, expenses, categoryTotals, balances, suggestTransfers, currentUserId, brl, participantById } from "@/lib/demo-data";
+import { useAppState } from "@/lib/store";
+import { budgetLevel, byCategory, pctOf, sumAmount, tripExpenses, tripPhase, userSummary } from "@/lib/finance";
+import { fmt } from "@/lib/money";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
     { title: "Dashboard — TripWise" },
-    { name: "description", content: "Resumo financeiro das suas viagens: orçamento, despesas e saldos com amigos." },
+    { name: "description", content: "Resumo financeiro das suas viagens: orçamento, gastos, saldo e acertos com amigos." },
     { property: "og:title", content: "Dashboard — TripWise" },
-    { property: "og:description", content: "Resumo financeiro das suas viagens: orçamento, despesas e saldos com amigos." },
+    { property: "og:description", content: "Resumo financeiro das suas viagens: orçamento, gastos, saldo e acertos com amigos." },
   ] }),
   component: Dashboard,
 });
 
 function Dashboard() {
-  const budget = trips.reduce((a, t) => a + t.budget, 0);
-  const spent = expenses.reduce((a, e) => a + e.amount, 0);
-  const transfers = suggestTransfers();
-  const perTrip = trips.map((t) => balances(expenses.filter((e) => e.tripId === t.id))[currentUserId] ?? 0);
-  const toReceive = perTrip.filter((v) => v > 0).reduce((a, v) => a + v, 0);
-  const toPay = -perTrip.filter((v) => v < 0).reduce((a, v) => a + v, 0);
-  const pct = Math.round((spent / budget) * 100);
-  const net = balances()[currentUserId] ?? 0;
+  const s = useAppState((x) => x);
+  const cur = s.settings.currency;
+  const sum = userSummary(s, cur);
+  const tripIds = new Set(sum.trips.map((t) => t.id));
+  const exps = s.expenses.filter((e) => tripIds.has(e.tripId));
+  const pct = pctOf(sum.spent, sum.planned);
+  const upcoming = [...s.trips].filter((t) => tripPhase(t) !== "Concluída").sort((a, b) => a.start.localeCompare(b.start));
+  const first = s.profile.name.split(" ")[0];
+  const today = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+
+  if (!s.trips.length) {
+    return (
+      <>
+        <PageHeader eyebrow={today} title={`Olá, ${first}`} description="Comece criando sua primeira viagem. Todos os números aqui serão calculados a partir do que você registrar." />
+        <EmptyState icon={Plane} title="Nenhuma viagem ainda" text="Crie uma viagem, adicione participantes e registre despesas para ver o resumo financeiro."
+          action={<TripDialog><Button size="lg"><Plus />Nova viagem</Button></TripDialog>} />
+      </>
+    );
+  }
 
   return (
     <>
-      <div className="mb-3"><DemoBadge /></div>
-      <PageHeader eyebrow="Segunda, 9 de novembro" title="Olá, Ana 👋" description="Suas finanças de viagem estão em dia. Você tem 3 viagens planejadas para os próximos meses."
-        action={<NewTripDialog><Button size="lg" className="shadow-lift"><Plus />Nova viagem</Button></NewTripDialog>} />
+      <PageHeader eyebrow={today} title={`Olá, ${first}`} description={`${upcoming.length} ${upcoming.length === 1 ? "viagem" : "viagens"} pela frente.`}
+        action={<><ExpenseDialog><Button variant="outline" size="lg"><Receipt />Nova despesa</Button></ExpenseDialog><TripDialog><Button size="lg" className="shadow-lift"><Plus />Nova viagem</Button></TripDialog></>} />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-5">
-        <div className="col-span-2 xl:col-span-1"><StatCard tone="navy" label="Orçamento total" value={brl(budget)} icon={Wallet} hint={`${trips.length} viagens`} /></div>
-        <StatCard label="Viagens planejadas" value={String(trips.length)} icon={Plane} hint="Próxima em 39 dias" />
-        <StatCard label="Despesas registradas" value={brl(spent)} icon={Receipt} hint={`${expenses.length} lançamentos`} />
-        <StatCard tone="positive" label="A receber" value={brl(toReceive)} icon={ArrowDownLeft} hint="Saldo positivo por viagem" />
-        <StatCard tone="negative" label="A pagar" value={brl(toPay)} icon={ArrowUpRight} hint={toPay ? "Pendente" : "Nada pendente"} />
+        <div className="col-span-2 xl:col-span-1"><StatCard tone="navy" label="Total planejado" value={fmt(sum.planned, cur)} icon={Wallet} hint={`${sum.trips.length} viagens em ${cur}`} /></div>
+        <StatCard label="Total gasto" value={fmt(sum.spent, cur)} icon={Receipt} hint={`${exps.length} despesas`} />
+        <StatCard tone={sum.available < 0 ? "negative" : "default"} label="Saldo disponível" value={fmt(sum.available, cur)} icon={PiggyBank} hint={sum.available < 0 ? "Acima do planejado" : "Restante do orçamento"} />
+        <StatCard tone="positive" label="A receber" value={fmt(sum.toReceive, cur)} icon={ArrowDownLeft} hint="Dos participantes" />
+        <StatCard tone="negative" label="A pagar" value={fmt(sum.toPay, cur)} icon={ArrowUpRight} hint={sum.toPay ? "Veja o acerto de contas" : "Nada pendente"} />
       </div>
+      {sum.otherCurrency > 0 && <p className="mt-3 text-xs text-muted-foreground">{sum.otherCurrency} viagem(ns) em outra moeda não entram nestes totais.</p>}
 
       <div className="mt-8 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-navy">Próximas viagens</h2>
         <Link to="/viagens" className="flex items-center gap-1 text-sm font-medium text-primary">Ver todas<ArrowRight className="size-4" /></Link>
       </div>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {trips.map((t) => <TripCard key={t.id} trip={t} compact />)}
-      </div>
+      {upcoming.length ? <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{upcoming.slice(0, 3).map((t) => <TripCard key={t.id} trip={t} compact />)}</div>
+        : <p className="mt-4 text-sm text-muted-foreground">Nenhuma viagem futura ou em andamento.</p>}
 
       <div className="mt-8 grid gap-4 lg:grid-cols-5">
-        <Panel title="Distribuição das despesas" className="lg:col-span-3"><CategoryDonut data={categoryTotals()} /></Panel>
+        <Panel title="Despesas por categoria" className="lg:col-span-3"><CategoryDonut data={byCategory(exps)} currency={cur} /></Panel>
         <Panel title="Orçamento utilizado" className="lg:col-span-2">
           <div className="font-display text-4xl font-semibold text-navy tabular">{pct}%</div>
-          <p className="mt-1 text-sm text-muted-foreground">{brl(spent)} de {brl(budget)}</p>
-          <div className="mt-4"><ProgressBar value={pct} /></div>
+          <p className="mt-1 text-sm text-muted-foreground">{fmt(sum.spent, cur)} de {fmt(sum.planned, cur)}</p>
+          <div className="mt-4"><ProgressBar value={pct} level={budgetLevel(sum.spent, sum.planned, s.settings.alertThreshold)} /></div>
           <ul className="mt-6 space-y-3">
-            {trips.map((t) => {
-              const p = Math.round((t.spent / t.budget) * 100);
-              return <li key={t.id}><div className="mb-1.5 flex justify-between text-xs"><span className="font-medium">{t.destination}</span><span className="text-muted-foreground tabular">{p}%</span></div><ProgressBar value={p} /></li>;
+            {sum.trips.map((t) => {
+              const sp = sumAmount(tripExpenses(s, t.id));
+              const lv = budgetLevel(sp, t.budget, s.settings.alertThreshold);
+              return (
+                <li key={t.id} className="space-y-1.5">
+                  <div className="flex justify-between text-xs"><span className="font-medium">{t.name}</span><span className="text-muted-foreground tabular">{pctOf(sp, t.budget)}%</span></div>
+                  <ProgressBar value={pctOf(sp, t.budget)} level={lv} />
+                  {s.settings.budgetAlerts && <BudgetAlert level={lv} label={`${t.name} (${fmt(sp, t.currency)} de ${fmt(t.budget, t.currency)})`} />}
+                </li>
+              );
             })}
           </ul>
-          <div className="mt-6 rounded-xl bg-positive-soft p-3 text-xs text-positive">
-            Saldo líquido: <strong className="tabular">{brl(net)}</strong> {net >= 0 ? "a seu favor" : "a pagar"}. Maior credor: {participantById(transfers[0]?.to ?? currentUserId).name.split(" ")[0]}.
-          </div>
         </Panel>
       </div>
     </>

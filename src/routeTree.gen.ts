@@ -17,6 +17,8 @@ import { Route as DivisaoRouteImport } from './routes/divisao'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as ViagensRouteImport } from './routes/viagens'
+import { Route as CompartilhadoTokenRouteImport } from './routes/compartilhado.$token'
+import { Route as ViagensTripIdRouteImport } from './routes/viagens.$tripId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +60,16 @@ const ViagensRoute = ViagensRouteImport.update({
   path: '/viagens',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompartilhadoTokenRoute = CompartilhadoTokenRouteImport.update({
+  id: '/compartilhado/$token',
+  path: '/compartilhado/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ViagensTripIdRoute = ViagensTripIdRouteImport.update({
+  id: '/$tripId',
+  path: '/$tripId',
+  getParentRoute: () => ViagensRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,7 +79,9 @@ export interface FileRoutesByFullPath {
   '/divisao': typeof DivisaoRoute
   '/perfil': typeof PerfilRoute
   '/relatorios': typeof RelatoriosRoute
-  '/viagens': typeof ViagensRoute
+  '/viagens': typeof ViagensRouteWithChildren
+  '/compartilhado/$token': typeof CompartilhadoTokenRoute
+  '/viagens/$tripId': typeof ViagensTripIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,7 +91,9 @@ export interface FileRoutesByTo {
   '/divisao': typeof DivisaoRoute
   '/perfil': typeof PerfilRoute
   '/relatorios': typeof RelatoriosRoute
-  '/viagens': typeof ViagensRoute
+  '/viagens': typeof ViagensRouteWithChildren
+  '/compartilhado/$token': typeof CompartilhadoTokenRoute
+  '/viagens/$tripId': typeof ViagensTripIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,7 +104,9 @@ export interface FileRoutesById {
   '/divisao': typeof DivisaoRoute
   '/perfil': typeof PerfilRoute
   '/relatorios': typeof RelatoriosRoute
-  '/viagens': typeof ViagensRoute
+  '/viagens': typeof ViagensRouteWithChildren
+  '/compartilhado/$token': typeof CompartilhadoTokenRoute
+  '/viagens/$tripId': typeof ViagensTripIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +119,8 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/relatorios'
     | '/viagens'
+    | '/compartilhado/$token'
+    | '/viagens/$tripId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +131,8 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/relatorios'
     | '/viagens'
+    | '/compartilhado/$token'
+    | '/viagens/$tripId'
   id:
     | '__root__'
     | '/'
@@ -121,6 +143,8 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/relatorios'
     | '/viagens'
+    | '/compartilhado/$token'
+    | '/viagens/$tripId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,7 +155,8 @@ export interface RootRouteChildren {
   DivisaoRoute: typeof DivisaoRoute
   PerfilRoute: typeof PerfilRoute
   RelatoriosRoute: typeof RelatoriosRoute
-  ViagensRoute: typeof ViagensRoute
+  ViagensRoute: typeof ViagensRouteWithChildren
+  CompartilhadoTokenRoute: typeof CompartilhadoTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,8 +217,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViagensRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compartilhado/$token': {
+      id: '/compartilhado/$token'
+      path: '/compartilhado/$token'
+      fullPath: '/compartilhado/$token'
+      preLoaderRoute: typeof CompartilhadoTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/viagens/$tripId': {
+      id: '/viagens/$tripId'
+      path: '/$tripId'
+      fullPath: '/viagens/$tripId'
+      preLoaderRoute: typeof ViagensTripIdRouteImport
+      parentRoute: typeof ViagensRoute
+    }
   }
 }
+
+interface ViagensRouteChildren {
+  ViagensTripIdRoute: typeof ViagensTripIdRoute
+}
+
+const ViagensRouteChildren: ViagensRouteChildren = {
+  ViagensTripIdRoute: ViagensTripIdRoute,
+}
+
+const ViagensRouteWithChildren =
+  ViagensRoute._addFileChildren(ViagensRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -203,7 +253,8 @@ const rootRouteChildren: RootRouteChildren = {
   DivisaoRoute: DivisaoRoute,
   PerfilRoute: PerfilRoute,
   RelatoriosRoute: RelatoriosRoute,
-  ViagensRoute: ViagensRoute,
+  ViagensRoute: ViagensRouteWithChildren,
+  CompartilhadoTokenRoute: CompartilhadoTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
