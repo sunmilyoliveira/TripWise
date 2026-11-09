@@ -15,7 +15,7 @@ import { MoneyInput } from "./MoneyInput";
 import { Chip, NativeSelect } from "./ui";
 import { cn } from "@/lib/utils";
 
-export function ExpenseDialog({ children, expense, tripId }: { children: ReactNode; expense?: Expense; tripId?: string }) {
+export function ExpenseDialog({ children, expense, tripId }: { children: ReactNode; expense?: Expense | undefined; tripId?: string | undefined }) {
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
