@@ -17,6 +17,7 @@ import { Route as DivisaoRouteImport } from './routes/divisao'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as ViagensRouteImport } from './routes/viagens'
+import { Route as ViagensRouteImport } from './routes/viagens.'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const ViagensRoute = ViagensRouteImport.update({
   path: '/viagens',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ViagensRoute = ViagensRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ViagensRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,7 +73,8 @@ export interface FileRoutesByFullPath {
   '/divisao': typeof DivisaoRoute
   '/perfil': typeof PerfilRoute
   '/relatorios': typeof RelatoriosRoute
-  '/viagens': typeof ViagensRoute
+  '/viagens': typeof ViagensRouteWithChildren
+  '/viagens/': typeof ViagensRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -88,7 +95,8 @@ export interface FileRoutesById {
   '/divisao': typeof DivisaoRoute
   '/perfil': typeof PerfilRoute
   '/relatorios': typeof RelatoriosRoute
-  '/viagens': typeof ViagensRoute
+  '/viagens': typeof ViagensRouteWithChildren
+  '/viagens/': typeof ViagensRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +109,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/relatorios'
     | '/viagens'
+    | '/viagens/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/relatorios'
     | '/viagens'
+    | '/viagens/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,7 +141,7 @@ export interface RootRouteChildren {
   DivisaoRoute: typeof DivisaoRoute
   PerfilRoute: typeof PerfilRoute
   RelatoriosRoute: typeof RelatoriosRoute
-  ViagensRoute: typeof ViagensRoute
+  ViagensRoute: typeof ViagensRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -192,8 +202,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViagensRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/viagens/': {
+      id: '/viagens/'
+      path: '/'
+      fullPath: '/viagens/'
+      preLoaderRoute: typeof ViagensRouteImport
+      parentRoute: typeof ViagensRoute
+    }
   }
 }
+
+interface ViagensRouteChildren {
+  ViagensRoute: typeof ViagensRoute
+}
+
+const ViagensRouteChildren: ViagensRouteChildren = {
+  ViagensRoute: ViagensRoute,
+}
+
+const ViagensRouteWithChildren =
+  ViagensRoute._addFileChildren(ViagensRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -203,7 +231,7 @@ const rootRouteChildren: RootRouteChildren = {
   DivisaoRoute: DivisaoRoute,
   PerfilRoute: PerfilRoute,
   RelatoriosRoute: RelatoriosRoute,
-  ViagensRoute: ViagensRoute,
+  ViagensRoute: ViagensRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

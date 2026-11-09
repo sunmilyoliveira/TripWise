@@ -1,57 +1,104 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowRight, Check, Clock, CircleDollarSign, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Clock, CircleDollarSign, CheckCircle2, Trash2, HandCoins } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader, Panel, Avatar, StatCard, DemoBadge } from "@/components/app/ui";
-import { suggestTransfers, paymentHistory, brl, participantById } from "@/lib/demo-data";
+import { PageHeader, Panel, Avatar, StatCard, EmptyState, PersonName } from "@/components/app/ui";
+import { TripPicker, useSelectedTrip } from "@/components/app/TripPicker";
+import { PaymentDialog } from "@/components/app/PaymentDialog";
+import { ConfirmDelete } from "@/components/app/ConfirmDelete";
+import { NoTrips } from "@/components/app/NoTrips";
+import { deletePayment, useAppState } from "@/lib/store";
+import { suggestTransfers, tripBalances } from "@/lib/finance";
+import { fmt } from "@/lib/money";
+import { fmtDateLong } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/acerto")({
   head: () => ({ meta: [
     { title: "Acerto de contas — TripWise" },
-    { name: "description", content: "Resumo das dívidas e as transferências mínimas para zerar o grupo." },
+    { name: "description", content: "Quem deve, quanto e para quem, com transferências mínimas e registro de pagamentos." },
     { property: "og:title", content: "Acerto de contas — TripWise" },
-    { property: "og:description", content: "Resumo das dívidas e as transferências mínimas para zerar o grupo." },
+    { property: "og:description", content: "Quem deve, quanto e para quem, com transferências mínimas e registro de pagamentos." },
   ] }),
   component: Settle,
 });
 
 function Settle() {
-  const transfers = suggestTransfers();
-  const [done, setDone] = useState<number[]>([]);
-  const pending = transfers.filter((_, i) => !done.includes(i)).reduce((a, t) => a + t.amount, 0);
-  const received = paymentHistory.filter((p) => p.status === "Recebido").reduce((a, p) => a + p.amount, 0);
+  const s = useAppState((x) => x);
+  const { trip, setTripId } = useSelectedTrip();
   return (
     <>
-      <PageHeader eyebrow="Acerto de contas" title="Quem paga quem" description="Sugerimos o menor número de transferências para quitar todas as dívidas." action={<DemoBadge />} />
-      <div className="grid gap-3 sm:grid-cols-3">
-        <StatCard tone="navy" label="Total em dívidas" value={brl(transfers.reduce((a, t) => a + t.amount, 0))} icon={CircleDollarSign} hint={`${transfers.length} transferências`} />
-        <StatCard tone="negative" label="Valores pendentes" value={brl(pending)} icon={Clock} />
-        <StatCard tone="positive" label="Valores recebidos" value={brl(received)} icon={CheckCircle2} />
-      </div>
-      <Panel title="Transferências sugeridas" className="mt-6">
-        <ul className="space-y-3">
-          {transfers.map((t, i) => {
-            const ok = done.includes(i);
-            return (
-              <li key={i} className="flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center">
-                <div className="flex flex-1 items-center gap-3">
-                  <Avatar id={t.from} />
-                  <div className="text-sm"><span className="font-semibold text-navy">{participantById(t.from).name}</span></div>
-                  <ArrowRight className="size-4 text-muted-foreground" />
-                  <Avatar id={t.to} />
-                  <div className="text-sm"><span className="font-semibold text-navy">{participantById(t.to).name}</span></div>
-                </div>
-                <div className="flex items-center justify-between gap-4 sm:justify-end">
-                  <span className="font-display text-lg font-semibold text-navy tabular">{brl(t.amount)}</span>
-                  {ok ? <span className="flex items-center gap-1 text-sm font-medium text-positive"><Check className="size-4" />Quitado</span>
-                    : <Button size="sm" variant="outline" onClick={() => { setDone((d) => [...d, i]); toast.success("Pagamento marcado como quitado"); }}>Marcar como pago</Button>}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </Panel>
+      <PageHeader eyebrow="Acerto de contas" title="Quem paga quem" description="O app só registra os acertos — nenhum pagamento real é feito."
+        action={trip && <TripPicker value={trip.id} onChange={setTripId} />} />
+      {!trip ? <NoTrips /> : (() => {
+        const c = trip.currency;
+        const bal = tripBalances(s, trip);
+        const transfers = suggestTransfers(bal);
+        const pending = transfers.reduce((a, t) => a + t.amount, 0);
+        const pays = s.payments.filter((p) => p.tripId === trip.id).sort((a, b) => b.date.localeCompare(a.date));
+        const paid = pays.reduce((a, p) => a + p.amount, 0);
+        return (
+          <>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <StatCard tone="navy" label="Total pendente" value={fmt(pending, c)} icon={CircleDollarSign} hint={`${transfers.length} transferência(s) sugerida(s)`} />
+              <StatCard tone="positive" label="Já acertado" value={fmt(paid, c)} icon={CheckCircle2} hint={`${pays.length} pagamento(s)`} />
+              <StatCard tone={pending ? "negative" : "positive"} label="Situação" value={pending ? "Pendente" : "Quitado"} icon={Clock} />
+            </div>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              <Panel title="Transferências sugeridas" className="lg:col-span-2">
+                {!transfers.length ? <EmptyState icon={HandCoins} title="Tudo quitado" text="Ninguém deve nada nesta viagem." /> :
+                <ul className="space-y-3">
+                  {transfers.map((t) => (
+                    <li key={`${t.from}-${t.to}`} className="flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center">
+                      <div className="flex flex-1 flex-wrap items-center gap-2 text-sm">
+                        <Avatar id={t.from} /><span className="font-semibold text-navy"><PersonName id={t.from} /></span>
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">deve <ArrowRight className="size-4" /></span>
+                        <Avatar id={t.to} /><span className="font-semibold text-navy"><PersonName id={t.to} /></span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4 sm:justify-end">
+                        <span className="font-display text-lg font-semibold text-navy tabular">{fmt(t.amount, c)}</span>
+                        <PaymentDialog tripId={trip.id} from={t.from} to={t.to} owed={t.amount} currency={c}><Button size="sm">Registrar pagamento</Button></PaymentDialog>
+                      </div>
+                    </li>
+                  ))}
+                </ul>}
+              </Panel>
+              <Panel title="Saldo por participante">
+                <ul className="space-y-3">
+                  {trip.participantIds.map((id) => {
+                    const v = bal[id] ?? 0;
+                    return (
+                      <li key={id} className="flex items-center justify-between gap-2 text-sm">
+                        <span className="flex items-center gap-2"><Avatar id={id} size="sm" /><PersonName id={id} /></span>
+                        <span className={cn("text-right font-semibold tabular", v > 0 ? "text-positive" : v < 0 ? "text-destructive" : "text-muted-foreground")}>
+                          {v > 0 ? `recebe ${fmt(v, c)}` : v < 0 ? `deve ${fmt(-v, c)}` : "quitado"}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Panel>
+            </div>
+
+            <Panel title="Histórico de pagamentos" className="mt-4">
+              {!pays.length ? <p className="text-sm text-muted-foreground">Nenhum pagamento registrado.</p> :
+              <ul className="divide-y">
+                {pays.map((p) => (
+                  <li key={p.id} className="flex items-center gap-3 py-3">
+                    <Avatar id={p.from} size="sm" />
+                    <div className="min-w-0 flex-1 text-sm"><div className="font-medium"><PersonName id={p.from} /> → <PersonName id={p.to} /></div><div className="text-xs text-muted-foreground">{fmtDateLong(p.date)}{p.note && ` · ${p.note}`}</div></div>
+                    <div className="font-semibold tabular">{fmt(p.amount, c)}</div>
+                    <ConfirmDelete title="Excluir pagamento?" text="O saldo voltará a ficar pendente." onConfirm={() => { deletePayment(p.id); toast.success("Pagamento excluído"); }}>
+                      <Button size="icon" variant="ghost" aria-label="Excluir pagamento"><Trash2 /></Button>
+                    </ConfirmDelete>
+                  </li>
+                ))}
+              </ul>}
+            </Panel>
+          </>
+        );
+      })()}
     </>
   );
 }

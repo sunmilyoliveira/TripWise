@@ -15,7 +15,7 @@ import { fmt } from "@/lib/money";
 import { fmtDateLong } from "@/lib/dates";
 import { CATEGORIES, ME, type Role } from "@/lib/types";
 
-export const Route = createFileRoute("/viagens/$tripId")({
+export const Route = createFileRoute("/viagens/")({
   head: () => ({ meta: [
     { title: "Resumo da viagem — TripWise" },
     { name: "description", content: "Orçamento, planejamento por categoria, participantes e compartilhamento da viagem." },
