@@ -21,8 +21,9 @@ function Dashboard() {
   const budget = trips.reduce((a, t) => a + t.budget, 0);
   const spent = expenses.reduce((a, e) => a + e.amount, 0);
   const transfers = suggestTransfers();
-  const toReceive = transfers.filter((t) => t.to === currentUserId).reduce((a, t) => a + t.amount, 0);
-  const toPay = transfers.filter((t) => t.from === currentUserId).reduce((a, t) => a + t.amount, 0);
+  const perTrip = trips.map((t) => balances(expenses.filter((e) => e.tripId === t.id))[currentUserId] ?? 0);
+  const toReceive = perTrip.filter((v) => v > 0).reduce((a, v) => a + v, 0);
+  const toPay = -perTrip.filter((v) => v < 0).reduce((a, v) => a + v, 0);
   const pct = Math.round((spent / budget) * 100);
   const net = balances()[currentUserId] ?? 0;
 
@@ -36,7 +37,7 @@ function Dashboard() {
         <div className="col-span-2 xl:col-span-1"><StatCard tone="navy" label="Orçamento total" value={brl(budget)} icon={Wallet} hint={`${trips.length} viagens`} /></div>
         <StatCard label="Viagens planejadas" value={String(trips.length)} icon={Plane} hint="Próxima em 39 dias" />
         <StatCard label="Despesas registradas" value={brl(spent)} icon={Receipt} hint={`${expenses.length} lançamentos`} />
-        <StatCard tone="positive" label="A receber" value={brl(toReceive)} icon={ArrowDownLeft} hint="De 2 pessoas" />
+        <StatCard tone="positive" label="A receber" value={brl(toReceive)} icon={ArrowDownLeft} hint="Saldo positivo por viagem" />
         <StatCard tone="negative" label="A pagar" value={brl(toPay)} icon={ArrowUpRight} hint={toPay ? "Pendente" : "Nada pendente"} />
       </div>
 

@@ -40,7 +40,7 @@ export function StatCard({ label, value, icon: Icon, hint, tone = "default" }: {
           <Icon className="size-4" />
         </span>
       </div>
-      <div className={cn("mt-3 font-display text-2xl font-semibold tabular", navy ? "" : "text-navy")}>{value}</div>
+      <div className={cn("mt-3 font-display text-xl font-semibold sm:text-2xl xl:text-xl tabular", navy ? "" : "text-navy")}>{value}</div>
       {hint && <div className={cn("mt-1 text-xs", navy ? "text-navy-muted" : "text-muted-foreground")}>{hint}</div>}
     </div>
   );

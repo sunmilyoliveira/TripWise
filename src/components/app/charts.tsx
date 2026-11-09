@@ -9,14 +9,12 @@ export function CategoryDonut({ data }: { data: { name: string; value: number }[
   return (
     <div className="flex flex-col items-center gap-6 sm:flex-row">
       <div className="relative size-44 shrink-0">
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie data={data} dataKey="value" innerRadius={58} outerRadius={84} paddingAngle={2} stroke="none">
+          <PieChart width={176} height={176}>
+            <Pie isAnimationActive={false} data={data} dataKey="value" innerRadius={58} outerRadius={84} paddingAngle={2} stroke="none">
               {data.map((_, i) => <Cell key={i} fill={chartColors[i % 5]} />)}
             </Pie>
             <Tooltip {...tip} />
           </PieChart>
-        </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
           <div><div className="text-[11px] text-muted-foreground">Total</div><div className="font-display text-sm font-semibold text-navy tabular">{brl(total)}</div></div>
         </div>
