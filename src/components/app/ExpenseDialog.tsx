@@ -27,7 +27,7 @@ export function ExpenseDialog({ children, expense, tripId }: { children: ReactNo
   );
 }
 
-function ExpenseForm({ expense, tripId: initialTrip, onDone }: { expense?: Expense; tripId?: string; onDone: () => void }) {
+function ExpenseForm({ expense, tripId: initialTrip, onDone }: { expense?: Expense | undefined; tripId?: string | undefined; onDone: () => void }) {
   const trips = useAppState((s) => s.trips);
   const people = useAppState((s) => s.participants);
   const [tripId, setTripId] = useState(expense?.tripId ?? initialTrip ?? trips[0]?.id ?? "");
@@ -63,10 +63,10 @@ function ExpenseForm({ expense, tripId: initialTrip, onDone }: { expense?: Expen
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (amount == null) return toast.error("Informe um valor válido (não negativo).");
+    if (amount == null) { toast.error("Informe um valor válido (não negativo)."); return; }
     const r = saveExpense({ tripId, description, amount, date, category, paidBy, splitMode: mode, participantIds: ids,
       customValues: Object.fromEntries(ids.map((i) => [i, values[i] ?? 0])), percentages: Object.fromEntries(ids.map((i) => [i, pcts[i] ?? 0])), paymentMethod: method, notes }, expense?.id);
-    if (!r.ok) return toast.error(r.error);
+    if (!r.ok) { toast.error(r.error); return; }
     toast.success(expense ? "Despesa atualizada" : "Despesa registrada");
     onDone();
   };

@@ -10,7 +10,7 @@ export function AddParticipantInline({ onAdded }: { onAdded?: (id: string) => vo
   const [email, setEmail] = useState("");
   const submit = () => {
     const r = addParticipant(name, email);
-    if (!r.ok) return toast.error(r.error);
+    if (!r.ok) { toast.error(r.error); return; }
     toast.success(`${r.value.name} adicionado(a)`);
     setName(""); setEmail(""); onAdded?.(r.value.id);
   };

@@ -17,9 +17,9 @@ export function PaymentDialog({ children, tripId, from, to, owed, currency }: { 
   const [note, setNote] = useState("");
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (amount == null) return toast.error("Informe um valor válido.");
+    if (amount == null) { toast.error("Informe um valor válido."); return; }
     const r = registerPayment({ tripId, from, to, amount, date, note }, owed);
-    if (!r.ok) return toast.error(r.error);
+    if (!r.ok) { toast.error(r.error); return; }
     toast.success(amount === owed ? "Dívida quitada" : `Pagamento parcial registrado. Restam ${fmt(owed - amount, currency)}`);
     setOpen(false);
   };

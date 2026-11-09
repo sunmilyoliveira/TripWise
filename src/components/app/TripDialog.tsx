@@ -11,7 +11,7 @@ import { MoneyInput } from "./MoneyInput";
 import { AddParticipantInline } from "./AddParticipantInline";
 import { Chip, NativeSelect } from "./ui";
 
-export function TripDialog({ children, trip, onSaved }: { children: ReactNode; trip?: Trip; onSaved?: (t: Trip) => void }) {
+export function TripDialog({ children, trip, onSaved }: { children: ReactNode; trip?: Trip | undefined; onSaved?: (t: Trip) => void }) {
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -23,7 +23,7 @@ export function TripDialog({ children, trip, onSaved }: { children: ReactNode; t
   );
 }
 
-function TripForm({ trip, onDone }: { trip?: Trip; onDone: (t: Trip) => void }) {
+function TripForm({ trip, onDone }: { trip?: Trip | undefined; onDone: (t: Trip) => void }) {
   const participants = useAppState((s) => s.participants);
   const defaultCurrency = useAppState((s) => s.settings.currency);
   const [name, setName] = useState(trip?.name ?? "");
@@ -42,7 +42,7 @@ function TripForm({ trip, onDone }: { trip?: Trip; onDone: (t: Trip) => void }) 
     const cleanInd = Object.fromEntries(Object.entries(ind).filter(([k, v]) => ids.includes(k) && v > 0));
     const cleanCat = Object.fromEntries(Object.entries(cat).filter(([, v]) => (v ?? 0) > 0));
     const r = saveTrip({ name, destination, start, end, currency, budget: budget ?? 0, participantIds: ids, categoryBudgets: cleanCat, individualBudgets: cleanInd }, trip?.id);
-    if (!r.ok) return toast.error(r.error);
+    if (!r.ok) { toast.error(r.error); return; }
     toast.success(trip ? "Viagem atualizada" : "Viagem criada");
     onDone(r.value);
   };

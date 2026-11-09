@@ -113,7 +113,7 @@ function TripDetail() {
           </ul>
           <div className="mt-5 border-t pt-5">
             <div className="mb-2 text-sm font-medium">Convidar por e-mail</div>
-            <form className="flex flex-col gap-2 sm:flex-row" onSubmit={(e) => { e.preventDefault(); const r = addInvite(trip.id, email, role); if (!r.ok) return toast.error(r.error); setEmail(""); toast.success("Convite registrado"); }}>
+            <form className="flex flex-col gap-2 sm:flex-row" onSubmit={(e) => { e.preventDefault(); const r = addInvite(trip.id, email, role); if (!r.ok) { toast.error(r.error); return; } setEmail(""); toast.success("Convite registrado"); }}>
               <Input type="email" placeholder="email@exemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="E-mail do convidado" />
               <NativeSelect aria-label="Permissão do convite" className="sm:w-40" value={role} onChange={(e) => setRoleNew(e.target.value as Role)}><option value="editor">{ROLE_LABEL.editor}</option><option value="leitor">{ROLE_LABEL.leitor}</option></NativeSelect>
               <Button type="submit" variant="outline"><Mail />Convidar</Button>
