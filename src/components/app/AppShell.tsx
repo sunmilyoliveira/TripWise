@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
+import { hydrate, useHydrated } from "@/lib/store";
 import { Menu, Bell } from "lucide-react";
 import { navItems, mobilePrimary } from "./nav";
 import { Logo } from "./Logo";
@@ -31,8 +32,8 @@ function SidebarBody({ onNavigate }: { onNavigate?: (() => void) | undefined }) 
       <Logo inverted />
       <NavList onNavigate={onNavigate} />
       <div className="mt-auto rounded-2xl border border-sidebar-border bg-sidebar-accent/50 p-4">
-        <div className="text-xs font-semibold text-sidebar-accent-foreground">Modo demonstração</div>
-        <p className="mt-1 text-xs leading-relaxed text-sidebar-foreground/80">Todos os dados exibidos são fictícios.</p>
+        <div className="text-xs font-semibold text-sidebar-accent-foreground">Salvo neste dispositivo</div>
+        <p className="mt-1 text-xs leading-relaxed text-sidebar-foreground/80">Seus dados ficam no navegador. Sincronização e login exigem ativar o backend.</p>
       </div>
     </div>
   );
@@ -40,6 +41,8 @@ function SidebarBody({ onNavigate }: { onNavigate?: (() => void) | undefined }) 
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const ready = useHydrated();
+  useEffect(() => hydrate(), []);
   const path = useRouterState({ select: (s) => s.location.pathname });
   return (
     <div className="min-h-screen bg-background">
@@ -48,7 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/85 px-4 py-3 backdrop-blur lg:hidden">
         <button aria-label="Abrir menu" onClick={() => setOpen(true)} className="grid size-10 place-items-center rounded-xl border bg-card"><Menu className="size-5" /></button>
         <Logo />
-        <button aria-label="Notificações" className="grid size-10 place-items-center rounded-xl border bg-card"><Bell className="size-5" /></button>
+        <Link to="/perfil" aria-label="Configurações" className="grid size-10 place-items-center rounded-xl border bg-card"><Bell className="size-5" /></Link>
       </header>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="w-72 border-0 p-0">
@@ -58,7 +61,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </Sheet>
 
       <main className="pb-24 lg:pb-10 lg:pl-64">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</div>
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{ready ? children : <div className="h-64 animate-pulse rounded-2xl bg-muted" />}</div>
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-card/95 backdrop-blur lg:hidden">
