@@ -21,7 +21,7 @@ export function CategoryDonut({ data }: { data: { name: string; value: number }[
       </div>
       <ul className="w-full space-y-2.5">
         {data.map((d, i) => (
-          <li key={d.name} className="flex items-center justify-between text-sm">
+          <li key={d.name} className="flex items-center justify-between gap-4 text-sm">
             <span className="flex items-center gap-2 pr-3"><span className="size-2.5 rounded-full" style={{ background: chartColors[i % 5] }} />{d.name}</span>
             <span className="text-muted-foreground tabular">{Math.round((d.value / total) * 100)}%</span>
           </li>
