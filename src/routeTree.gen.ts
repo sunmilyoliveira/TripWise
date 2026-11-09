@@ -17,6 +17,7 @@ import { Route as DivisaoRouteImport } from './routes/divisao'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as ViagensRouteImport } from './routes/viagens'
+import { Route as CompartilhadoTokenRouteImport } from './routes/compartilhado.$token'
 import { Route as ViagensRouteImport } from './routes/viagens.'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +60,11 @@ const ViagensRoute = ViagensRouteImport.update({
   path: '/viagens',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompartilhadoTokenRoute = CompartilhadoTokenRouteImport.update({
+  id: '/compartilhado/$token',
+  path: '/compartilhado/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ViagensRoute = ViagensRouteImport.update({
   id: '/',
   path: '/',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/relatorios': typeof RelatoriosRoute
   '/viagens': typeof ViagensRouteWithChildren
   '/viagens/': typeof ViagensRoute
+  '/compartilhado/$token': typeof CompartilhadoTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof PerfilRoute
   '/relatorios': typeof RelatoriosRoute
   '/viagens': typeof ViagensRoute
+  '/compartilhado/$token': typeof CompartilhadoTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/relatorios': typeof RelatoriosRoute
   '/viagens': typeof ViagensRouteWithChildren
   '/viagens/': typeof ViagensRoute
+  '/compartilhado/$token': typeof CompartilhadoTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/viagens'
     | '/viagens/'
+    | '/compartilhado/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/relatorios'
     | '/viagens'
+    | '/compartilhado/$token'
   id:
     | '__root__'
     | '/'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/viagens'
     | '/viagens/'
+    | '/compartilhado/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   PerfilRoute: typeof PerfilRoute
   RelatoriosRoute: typeof RelatoriosRoute
   ViagensRoute: typeof ViagensRouteWithChildren
+  CompartilhadoTokenRoute: typeof CompartilhadoTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -202,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViagensRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compartilhado/$token': {
+      id: '/compartilhado/$token'
+      path: '/compartilhado/$token'
+      fullPath: '/compartilhado/$token'
+      preLoaderRoute: typeof CompartilhadoTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/viagens/': {
       id: '/viagens/'
       path: '/'
@@ -232,6 +252,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerfilRoute: PerfilRoute,
   RelatoriosRoute: RelatoriosRoute,
   ViagensRoute: ViagensRouteWithChildren,
+  CompartilhadoTokenRoute: CompartilhadoTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
