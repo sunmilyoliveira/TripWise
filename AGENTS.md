@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Demo data and split/settlement math live in `src/lib/demo-data.ts` so pages can later swap to real data sources without UI changes.
+- App chrome (sidebar, mobile header/bottom nav) is `AppShell` wrapped around `<Outlet />` in `__root.tsx`; nav items come from `src/components/app/nav.ts`.
