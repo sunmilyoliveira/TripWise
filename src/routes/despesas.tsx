@@ -1,55 +1,47 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { toast } from "sonner";
-import { Plus, BedDouble, Car, UtensilsCrossed, Ticket, ShoppingBag } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader, Panel, Avatar, DemoBadge } from "@/components/app/ui";
-import { expenses, trips, brl, fmtDate, participantById, type Category } from "@/lib/demo-data";
-import { cn } from "@/lib/utils";
+import { PageHeader, FilterPill, NativeSelect } from "@/components/app/ui";
+import { ExpenseDialog } from "@/components/app/ExpenseDialog";
+import { ExpenseList } from "@/components/app/ExpenseList";
+import { useAppState } from "@/lib/store";
+import { CATEGORIES } from "@/lib/types";
+import { fmt } from "@/lib/money";
 
 export const Route = createFileRoute("/despesas")({
   head: () => ({ meta: [
     { title: "Despesas — TripWise" },
-    { name: "description", content: "Todas as despesas registradas nas suas viagens, por categoria e pagador." },
+    { name: "description", content: "Registre, edite e exclua despesas das viagens com divisão entre participantes." },
     { property: "og:title", content: "Despesas — TripWise" },
-    { property: "og:description", content: "Todas as despesas registradas nas suas viagens, por categoria e pagador." },
+    { property: "og:description", content: "Registre, edite e exclua despesas das viagens com divisão entre participantes." },
   ] }),
   component: Expenses,
 });
 
-const categoryIcon: Record<Category, typeof Car> = { Hospedagem: BedDouble, Transporte: Car, Alimentação: UtensilsCrossed, Passeios: Ticket, Compras: ShoppingBag };
-
 function Expenses() {
+  const trips = useAppState((s) => s.trips);
+  const all = useAppState((s) => s.expenses);
   const [trip, setTrip] = useState("all");
-  const list = trip === "all" ? expenses : expenses.filter((e) => e.tripId === trip);
+  const [cat, setCat] = useState("all");
+  const list = all.filter((e) => (trip === "all" || e.tripId === trip) && (cat === "all" || e.category === cat));
+  const cur = trip !== "all" ? trips.find((t) => t.id === trip)?.currency : undefined;
+  const sameCurrency = new Set(list.map((e) => trips.find((t) => t.id === e.tripId)?.currency)).size <= 1;
   return (
     <>
-      <PageHeader eyebrow="Despesas" title="Despesas registradas" description={`${list.length} lançamentos · ${brl(list.reduce((a, e) => a + e.amount, 0))}`}
-        action={<Button size="lg" onClick={() => toast("Cadastro de despesa disponível em breve (demonstração)")}><Plus />Nova despesa</Button>} />
-      <div className="mb-5 flex flex-wrap items-center gap-2">
-        {[{ id: "all", destination: "Todas" }, ...trips].map((t) => (
-          <button key={t.id} onClick={() => setTrip(t.id)} className={cn("rounded-full border px-4 py-1.5 text-sm font-medium", trip === t.id ? "border-navy bg-navy text-navy-foreground" : "bg-card text-muted-foreground")}>{t.destination}</button>
-        ))}
-        <span className="ml-auto"><DemoBadge /></span>
-      </div>
-      <Panel className="p-0 sm:p-0">
-        <ul className="divide-y">
-          {list.map((e) => {
-            const Icon = categoryIcon[e.category];
-            return (
-              <li key={e.id} className="flex items-center gap-4 px-5 py-4">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent text-accent-foreground"><Icon className="size-5" /></span>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-semibold text-navy">{e.title}</div>
-                  <div className="text-xs text-muted-foreground">{e.category} · {trips.find((t) => t.id === e.tripId)?.destination} · {fmtDate(e.date)}</div>
-                </div>
-                <div className="hidden items-center gap-2 text-xs text-muted-foreground sm:flex"><Avatar id={e.paidBy} size="sm" />{participantById(e.paidBy).name.split(" ")[0]} pagou</div>
-                <div className="text-right font-semibold text-navy tabular">{brl(e.amount)}</div>
-              </li>
-            );
-          })}
-        </ul>
-      </Panel>
+      <PageHeader eyebrow="Despesas" title="Despesas registradas"
+        description={`${list.length} lançamentos${sameCurrency && list.length ? ` · ${fmt(list.reduce((a, e) => a + e.amount, 0), cur ?? trips.find((t) => t.id === list[0]?.tripId)?.currency)}` : ""}`}
+        action={<ExpenseDialog tripId={trip === "all" ? undefined : trip}><Button size="lg" disabled={!trips.length}><Plus />Nova despesa</Button></ExpenseDialog>} />
+      {trips.length > 0 && (
+        <div className="mb-5 flex flex-wrap items-center gap-2">
+          <FilterPill active={trip === "all"} onClick={() => setTrip("all")}>Todas</FilterPill>
+          {trips.map((t) => <FilterPill key={t.id} active={trip === t.id} onClick={() => setTrip(t.id)}>{t.name}</FilterPill>)}
+          <NativeSelect aria-label="Categoria" className="ml-auto w-44" value={cat} onChange={(e) => setCat(e.target.value)}>
+            <option value="all">Todas as categorias</option>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+          </NativeSelect>
+        </div>
+      )}
+      {!trips.length ? <p className="text-sm text-muted-foreground">Crie uma viagem em "Minhas viagens" para registrar despesas.</p> : <ExpenseList expenses={list} showTrip />}
     </>
   );
 }
