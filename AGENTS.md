@@ -30,5 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Project rules
-- Demo data and split/settlement math live in `src/lib/demo-data.ts` so pages can later swap to real data sources without UI changes.
+- All app data lives in one localStorage store (`src/lib/store.ts`) with validated actions; pages only read via `useAppState`, so swapping to a backend means replacing the store internals.
+- Money is integer cents and percentages basis points; split/settlement math lives in pure functions in `src/lib/finance.ts` (tested) to avoid rounding errors.
+- The assistant (`src/lib/assistant.ts`) is deterministic rule-based over real data; a generative model must go through a server function, never browser keys.
 - App chrome (sidebar, mobile header/bottom nav) is `AppShell` wrapped around `<Outlet />` in `__root.tsx`; nav items come from `src/components/app/nav.ts`.

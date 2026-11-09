@@ -13,7 +13,7 @@ export function CategoryDonut({ data, currency = "BRL" }: { data: { name: string
     <div className="flex flex-col items-center gap-6 sm:flex-row">
       <div className="relative size-44 shrink-0">
         <PieChart width={176} height={176}>
-          <Pie isAnimationActive={false} cx={88} cy={88} startAngle={90} endAngle={-270} data={data} dataKey="value" innerRadius={58} outerRadius={84} paddingAngle={data.length > 1 ? 2 : 0} stroke="none">
+          <Pie isAnimationActive={false} cx={88} cy={88} startAngle={90} endAngle={-270} data={data} dataKey="value" innerRadius={56} outerRadius={80} paddingAngle={data.length > 1 ? 2 : 0} stroke="none">
             {data.map((_, i) => <Cell key={i} fill={chartColors[i % chartColors.length]} />)}
           </Pie>
           <Tooltip {...tip(currency)} />
