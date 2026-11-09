@@ -10,7 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AcertoRouteImport } from './routes/acerto'
+import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as DespesasRouteImport } from './routes/despesas'
+import { Route as DivisaoRouteImport } from './routes/divisao'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as ViagensRouteImport } from './routes/viagens'
 
 const IndexRoute = IndexRouteImport.update({
@@ -18,9 +23,34 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcertoRoute = AcertoRouteImport.update({
+  id: '/acerto',
+  path: '/acerto',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistenteRoute = AssistenteRouteImport.update({
+  id: '/assistente',
+  path: '/assistente',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DespesasRoute = DespesasRouteImport.update({
   id: '/despesas',
   path: '/despesas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DivisaoRoute = DivisaoRouteImport.update({
+  id: '/divisao',
+  path: '/divisao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatoriosRoute = RelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ViagensRoute = ViagensRouteImport.update({
@@ -31,31 +61,76 @@ const ViagensRoute = ViagensRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acerto': typeof AcertoRoute
+  '/assistente': typeof AssistenteRoute
   '/despesas': typeof DespesasRoute
+  '/divisao': typeof DivisaoRoute
+  '/perfil': typeof PerfilRoute
+  '/relatorios': typeof RelatoriosRoute
   '/viagens': typeof ViagensRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acerto': typeof AcertoRoute
+  '/assistente': typeof AssistenteRoute
   '/despesas': typeof DespesasRoute
+  '/divisao': typeof DivisaoRoute
+  '/perfil': typeof PerfilRoute
+  '/relatorios': typeof RelatoriosRoute
   '/viagens': typeof ViagensRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/acerto': typeof AcertoRoute
+  '/assistente': typeof AssistenteRoute
   '/despesas': typeof DespesasRoute
+  '/divisao': typeof DivisaoRoute
+  '/perfil': typeof PerfilRoute
+  '/relatorios': typeof RelatoriosRoute
   '/viagens': typeof ViagensRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/despesas' | '/viagens'
+  fullPaths:
+    | '/'
+    | '/acerto'
+    | '/assistente'
+    | '/despesas'
+    | '/divisao'
+    | '/perfil'
+    | '/relatorios'
+    | '/viagens'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/despesas' | '/viagens'
-  id: '__root__' | '/' | '/despesas' | '/viagens'
+  to:
+    | '/'
+    | '/acerto'
+    | '/assistente'
+    | '/despesas'
+    | '/divisao'
+    | '/perfil'
+    | '/relatorios'
+    | '/viagens'
+  id:
+    | '__root__'
+    | '/'
+    | '/acerto'
+    | '/assistente'
+    | '/despesas'
+    | '/divisao'
+    | '/perfil'
+    | '/relatorios'
+    | '/viagens'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcertoRoute: typeof AcertoRoute
+  AssistenteRoute: typeof AssistenteRoute
   DespesasRoute: typeof DespesasRoute
+  DivisaoRoute: typeof DivisaoRoute
+  PerfilRoute: typeof PerfilRoute
+  RelatoriosRoute: typeof RelatoriosRoute
   ViagensRoute: typeof ViagensRoute
 }
 
@@ -68,11 +143,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/acerto': {
+      id: '/acerto'
+      path: '/acerto'
+      fullPath: '/acerto'
+      preLoaderRoute: typeof AcertoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistente': {
+      id: '/assistente'
+      path: '/assistente'
+      fullPath: '/assistente'
+      preLoaderRoute: typeof AssistenteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/despesas': {
       id: '/despesas'
       path: '/despesas'
       fullPath: '/despesas'
       preLoaderRoute: typeof DespesasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/divisao': {
+      id: '/divisao'
+      path: '/divisao'
+      fullPath: '/divisao'
+      preLoaderRoute: typeof DivisaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorios': {
+      id: '/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof RelatoriosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/viagens': {
@@ -87,7 +197,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcertoRoute: AcertoRoute,
+  AssistenteRoute: AssistenteRoute,
   DespesasRoute: DespesasRoute,
+  DivisaoRoute: DivisaoRoute,
+  PerfilRoute: PerfilRoute,
+  RelatoriosRoute: RelatoriosRoute,
   ViagensRoute: ViagensRoute,
 }
 export const routeTree = rootRouteImport
