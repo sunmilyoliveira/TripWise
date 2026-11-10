@@ -7,6 +7,9 @@ O TripWise é uma aplicação web de organização financeira voltada para viaja
 A proposta é facilitar o planejamento financeiro de viagens, o acompanhamento de despesas e a divisão de custos entre participantes.
 
 ## 🎯 Objetivo
+## 📋 Documentação do projeto
+
+- [PRD — Product Requirements Document](Prd.md)
 
 Desenvolver uma solução que ajude viajantes individuais, casais e grupos a controlar seus gastos antes, durante e depois de uma viagem.
 
