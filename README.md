@@ -82,11 +82,20 @@ Etapas do desenvolvimento:
 
 Capturas de tela das principais funcionalidades:
 
-- Dashboard financeiro.
-- Cadastro e gerenciamento de viagens.
-- Divisão de despesas.
-- Acerto de contas.
-- Relatórios financeiros.
+### Dashboard financeiro
+![Dashboard](Dashboard.jpg)
+
+### Gestão de viagens
+![Viagens](Viagens.png)
+
+### Despesas
+![Despesas](Despesas.png)
+
+### Acerto de contas
+![Acerto](Acerto.jpg)
+
+### Relatórios financeiros
+![Relatórios](Relatórios.png)
 
 ## 💡 Aprendizados
 
