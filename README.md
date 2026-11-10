@@ -1,187 +1,98 @@
 # ✈️ TripWise — Travel smarter. Spend better.
 
-**Organize suas finanças, divida despesas e viaje com mais tranquilidade.**
+**Organize suas finanças e aproveite melhor cada viagem!**
 
-O TripWise é uma aplicação web de organização financeira voltada para viagens individuais e em grupo. A plataforma permite planejar orçamentos, registrar despesas, acompanhar gastos e organizar a divisão de custos entre participantes de uma viagem.
+O TripWise é uma aplicação web de organização financeira voltada para viajantes. Desenvolvido como parte do desafio da DIO, utilizando a abordagem de *Vibe Coding* com auxílio de inteligência artificial.
 
-O projeto foi desenvolvido como parte de um desafio prático da **Digital Innovation One (DIO)**, utilizando a abordagem de **Vibe Coding**, com apoio de inteligência artificial durante o planejamento, desenvolvimento e evolução da aplicação.
+A proposta é facilitar o planejamento financeiro de viagens, o acompanhamento de despesas e a divisão de custos entre participantes.
 
----
+## 🎯 Objetivo
 
-## 🎯 Objetivo do projeto
+Desenvolver uma solução que ajude viajantes individuais, casais e grupos a controlar seus gastos antes, durante e depois de uma viagem.
 
-O objetivo do TripWise é simplificar a gestão financeira de viagens, oferecendo em um único ambiente ferramentas para planejamento, acompanhamento de despesas e acerto de contas entre viajantes.
+## 🚀 Funcionalidades
 
-A proposta surgiu da necessidade de facilitar o controle dos gastos individuais e compartilhados, evitando cálculos manuais, confusões sobre pagamentos e perda de controle do orçamento.
+- **Dashboard financeiro:** valores planejados, gastos, saldo disponível e acertos.
+- **Gestão de viagens:** criação, edição e exclusão de viagens.
+- **Controle de despesas:** registro e organização de despesas por categoria.
+- **Divisão de despesas:** rateio igualitário, por valores personalizados, porcentagem ou despesas individuais.
+- **Acerto de contas:** identificação de quem deve pagar e quem deve receber.
+- **Pagamentos parciais e totais:** registro de pagamentos e atualização dos saldos.
+- **Assistente financeiro:** consulta de informações sobre os dados registrados.
+- **Relatórios:** comparação entre valores planejados e realizados.
+- **Perfil e configurações:** personalização de dados e preferências.
 
-## 💡 Funcionalidades
+## 🧪 Testes realizados
 
-A aplicação possui oito áreas principais:
+| Cenário | Resultado |
+|---|---|
+| Divisão de R$ 240,00 entre quatro pessoas | Aprovado |
+| Validação de valores personalizados | Aprovado |
+| Registro de pagamento parcial | Aprovado |
+| Registro de pagamento total | Aprovado |
+| Atualização dos saldos e histórico | Aprovado |
+| Persistência após recarregar a página | Aprovado |
+| Conferência em dispositivos móveis e desktop | Aprovado |
 
-### 1. Dashboard
-- Resumo financeiro das viagens.
-- Total planejado e total gasto.
-- Saldo disponível.
-- Valores a receber e a pagar.
-- Gastos por categoria.
-- Acompanhamento do orçamento.
+### Exemplo de acerto de contas
 
-### 2. Minhas viagens
-- Cadastro, edição e exclusão de viagens.
-- Destino, datas e orçamento.
-- Gerenciamento de participantes.
-- Orçamentos coletivos, individuais e por categoria.
-- Acompanhamento do status das viagens.
+Uma dívida de R$ 365,00 foi quitada em dois pagamentos:
 
-### 3. Planejamento financeiro
-- Definição de limites de gastos.
-- Organização por categorias.
-- Comparação entre valores planejados e realizados.
-- Alertas de orçamento próximo do limite ou ultrapassado.
+- Primeiro pagamento: R$ 100,00.
+- Segundo pagamento: R$ 265,00.
+- Saldo pendente final: R$ 0,00.
 
-### 4. Despesas
-- Registro, edição e exclusão de despesas.
-- Classificação por categoria.
-- Identificação de quem realizou o pagamento.
-- Associação das despesas às viagens e participantes.
+## 🛠️ Tecnologias e ferramentas
 
-### 5. Divisão de despesas
-Permite organizar os custos compartilhados utilizando quatro modalidades:
-- Divisão igualitária.
-- Divisão por valores personalizados.
-- Divisão por porcentagem.
-- Despesas individuais.
+- TypeScript
+- React
+- Vite
+- CSS
+- Lovable
+- GitHub
 
-O sistema calcula automaticamente a participação financeira de cada pessoa e valida os valores para evitar divergências.
+## 🤖 Desenvolvimento com inteligência artificial
 
-### 6. Acerto de contas
-- Identificação de quem deve e de quem tem valores a receber.
-- Sugestão de transferências para reduzir a quantidade de pagamentos.
-- Registro de pagamentos totais e parciais.
-- Histórico de pagamentos e saldos pendentes.
+O projeto foi desenvolvido com a abordagem de Vibe Coding, utilizando inteligência artificial como apoio na concepção, estruturação e implementação da aplicação.
 
-### 7. Assistente financeiro
-Interface de consulta que utiliza os dados registrados no aplicativo para responder perguntas sobre despesas, orçamento, categorias e dívidas entre participantes.
+Etapas do desenvolvimento:
 
-**Observação:** nesta versão, o assistente utiliza respostas simuladas com base nos dados da aplicação. Não há integração com um modelo de inteligência artificial externo.
+1. Definição do problema e da proposta de solução.
+2. Planejamento das funcionalidades e dos requisitos.
+3. Criação da interface e das telas.
+4. Implementação das regras de negócio e cálculos financeiros.
+5. Testes funcionais e identificação de inconsistências.
+6. Refinamento da aplicação a partir dos resultados dos testes.
 
-### 8. Relatórios e perfil
-- Relatórios de gastos por categoria e participante.
-- Comparação entre orçamento planejado e realizado.
-- Histórico financeiro das viagens.
-- Configurações de perfil e preferências.
-- Exportação e gerenciamento dos dados.
+## 🔒 Observações técnicas
 
----
+- Os dados são armazenados localmente no navegador.
+- A persistência utiliza o armazenamento local do dispositivo.
+- O assistente financeiro possui respostas simuladas, não sendo uma integração com um modelo de IA em produção.
+- O aplicativo não realiza transferências bancárias reais.
+- Login, sincronização entre dispositivos e compartilhamento efetivo entre usuários dependem de infraestrutura backend.
 
-## 🛠️ Tecnologias utilizadas
+## 🌐 Acesse o projeto
 
-- **React:** construção da interface.
-- **TypeScript:** tipagem e organização do código.
-- **Vite:** ambiente de desenvolvimento e compilação.
-- **Tailwind CSS:** estilização.
-- **Recharts:** visualização de dados e gráficos.
-- **Lucide React:** ícones da interface.
-- **Local Storage / armazenamento local do navegador:** persistência dos dados nesta versão.
+**Aplicação publicada:** https://tripwiseapp.lovable.app
 
-## 🧪 Validações realizadas
+**Repositório GitHub:** https://github.com/sunmilyoliveira/TripWise
 
-Durante o desenvolvimento, foram realizados testes funcionais para verificar:
+## 📸 Demonstração
 
-- Divisão igualitária de despesas entre participantes.
-- Divisão por valores personalizados.
-- Validação da soma dos valores.
-- Registro de pagamentos parciais.
-- Atualização integrada das informações financeiras.
-- Persistência dos dados após recarregar a página.
-- Responsividade em telas de computadores e dispositivos móveis.
+Capturas de tela das principais funcionalidades:
 
-### Exemplo de divisão
+- Dashboard financeiro.
+- Cadastro e gerenciamento de viagens.
+- Divisão de despesas.
+- Acerto de contas.
+- Relatórios financeiros.
 
-Uma despesa de R$ 240,00, paga por uma pessoa e dividida igualmente entre quatro participantes, resulta em:
+## 💡 Aprendizados
 
-| Participante | Valor |
-|---|---:|
-| Participante 1 (pagante) | R$ 60,00 |
-| Participante 2 | R$ 60,00 |
-| Participante 3 | R$ 60,00 |
-| Participante 4 | R$ 60,00 |
+O desenvolvimento do TripWise proporcionou a oportunidade de trabalhar com planejamento de requisitos, construção de interfaces, regras de negócio, lógica de programação, persistência de dados e testes funcionais.
 
-O pagante tem R$ 180,00 a receber dos outros três participantes.
-
-## 🚀 Como executar o projeto
-
-É necessário ter Node.js e npm instalados.
-
-Clone o repositório:
-
-```bash
-git clone https://github.com/sunmilyoliveira/tripwise.git
-```
-
-Entre na pasta:
-
-```bash
-cd tripwise
-```
-
-Instale as dependências:
-
-```bash
-npm install
-```
-
-Inicie o ambiente de desenvolvimento:
-
-```bash
-npm run dev
-```
-
-## ⚠️ Limitações da versão atual
-
-O TripWise foi desenvolvido como um MVP funcional, com armazenamento local no navegador.
-
-Nesta versão:
-- Os dados permanecem salvos no navegador utilizado.
-- Não há sincronização automática entre dispositivos.
-- Login e autenticação de usuários ainda não estão implementados.
-- Convites e compartilhamento não possuem controle de acesso real entre contas.
-- O assistente financeiro ainda não está conectado a uma IA externa.
-- O aplicativo não realiza transferências ou pagamentos reais.
-
-Essas funcionalidades poderão ser desenvolvidas em versões futuras com a implementação de backend, autenticação e integrações externas.
-
-## 🔮 Possíveis evoluções
-
-- Integração com inteligência artificial generativa.
-- Autenticação e gerenciamento de usuários.
-- Sincronização de viagens entre participantes e dispositivos.
-- Compartilhamento seguro de despesas.
-- Conversão automática de moedas.
-- Exportação avançada de relatórios.
-- Integrações com serviços financeiros.
-
-## 🤖 Desenvolvimento com Vibe Coding
-
-O projeto foi desenvolvido utilizando uma abordagem de Vibe Coding, com apoio de ferramentas de inteligência artificial para transformar requisitos e ideias em funcionalidades de software.
-
-O processo envolveu:
-- Definição do problema e da proposta de solução.
-- Planejamento dos requisitos e funcionalidades.
-- Construção da interface e experiência do usuário.
-- Desenvolvimento iterativo com auxílio de IA.
-- Testes, identificação de falhas e refinamento das funcionalidades.
-- Versionamento e publicação do código no GitHub.
-
-A experiência demonstrou como ferramentas de IA podem apoiar o desenvolvimento de soluções digitais, permitindo explorar ideias, construir protótipos funcionais e validar funcionalidades de forma iterativa.
-
-## 👩‍💻 Autoria
-
-**Sunmily Jenifer Leal de Oliveira**
-
-Projeto desenvolvido para o desafio da **Digital Innovation One (DIO)**.
-
-[GitHub — sunmilyoliveira](https://github.com/sunmilyoliveira)
+Também permitiu compreender melhor o potencial e as limitações do desenvolvimento assistido por inteligência artificial, especialmente a importância de validar os resultados gerados e testar as funcionalidades antes de considerar uma aplicação concluída.
 
 ---
 
