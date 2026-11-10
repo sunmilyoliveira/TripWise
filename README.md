@@ -95,7 +95,7 @@ Capturas de tela das principais funcionalidades:
 ![Acerto](Acerto.jpg)
 
 ### Relatórios financeiros
-![Relatórios](Relatórios.png)
+![Relatórios](Relatorios.png)
 
 ## 💡 Aprendizados
 
